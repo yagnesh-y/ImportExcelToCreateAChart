@@ -47,7 +47,7 @@ class Files extends Component {
   }
 
   render() {
-    console.log('renderd....');
+    console.log('renderd Files....');
     return (
       <div>
         <input

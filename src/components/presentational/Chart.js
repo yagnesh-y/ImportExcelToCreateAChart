@@ -18,7 +18,7 @@ class Chart extends Component {
           options={{
             title: {
               display: this.props.displayTitle,
-              text: 'Largest Cities In ' + this.props.location,
+              text: this.props.title,
               fontSize: 25
             },
             legend: {
@@ -34,7 +34,6 @@ class Chart extends Component {
 Chart.defaultProps = {
   displayTitle: true,
   displayLegend: true,
-  legendPosition: 'right',
-  location: 'City'
+  legendPosition: 'right'
 };
 export default Chart;

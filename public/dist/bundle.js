@@ -8573,6 +8573,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _presentational = __webpack_require__(194);
 
+var _circularJson = __webpack_require__(345);
+
+var _circularJson2 = _interopRequireDefault(_circularJson);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8597,7 +8601,9 @@ var Charts = function (_Component) {
           data: [617594, 181045, 153060, 106519, 105162, 95072],
           backgroundColor: ['rgba(255, 99, 132, 0.6)']
         }]
-      }
+      },
+      data: [],
+      finals: []
     };
     return _this;
   }
@@ -8617,55 +8623,79 @@ var Charts = function (_Component) {
   }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
-      if (nextProps !== this.props) return true;
-      return false;
+      console.log('next props and state is ');
+      console.log(nextProps.data);
+      console.log(this.state.data);
+      return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.finals) ? true : false;
     }
   }, {
     key: 'getChartData',
     value: function getChartData() {
       var excel_data = this.props.data;
-      var label = ''; //dataset label name ex: SERIES1
-      var labels = []; //x-axis
-      var data = []; //y-axis
-      for (var i = 0; i < excel_data.length; i++) {
-        for (var j = 1; j < excel_data[i].length; j++) {
-          for (var k = 0; k < excel_data[i][j].length; k++) {
-            //poupulate the corresponding x and y axis values into the respective variables...
-            if (k % 2 !== 0) data.push(excel_data[i][j][k]);else labels.push(excel_data[i][j][k]);
+      if (excel_data.length > 0) {
+        var label = ''; //dataset label name ex: SERIES1
+        var labels = []; //x-axis
+        var data = []; //y-axis
+        var data_s = Object.assign([], this.state.data);
+        var chartData = JSON.parse(_circularJson2.default.stringify(this.state.chartData));
+        console.log('before for loop is ');
+        console.log(chartData);
+        for (var i = 0; i < excel_data.length; i++) {
+          for (var j = 1; j < excel_data[i].length; j++) {
+            for (var k = 0; k < excel_data[i][j].length; k++) {
+              //poupulate the corresponding x and y axis values into the respective variables...
+              if (k % 2 !== 0) data.push(excel_data[i][j][k]);else labels.push(excel_data[i][j][k]);
+            }
           }
+          label = excel_data[i][0][0];
+          console.log('label is ' + label);
+          //here we are trying to set the newState for the new Row of data ex: "SERIES1"
+          console.log('chartData before is ' + chartData);
+          console.log(chartData);
+          chartData.labels = labels;
+          console.log('chartData after is ' + chartData);
+          console.log(chartData);
+          console.log('labels is ' + labels);
+          chartData.datasets[0].label = label;
+          chartData.datasets[0].data = data;
+          console.log('chartData at ' + i + ' is ');
+          console.log(chartData);
+          data_s.push(chartData);
+          var chartData = JSON.parse(_circularJson2.default.stringify(this.state.chartData));
+          //unitialise the x and y axis as we are multiple rows of data ..hence
+          //we need to call our Charts components with each instance of its own state....
+          labels = [];
+          data = [];
+          label = '';
         }
-        label = excel_data[i][0][0];
-        //here we are trying to set the newState for the new Row of data ex: "SERIES1"
-        var chartData = Object.assign({}, this.state.chartData);
-        chartData.labels = labels;
-        chartData.datasets[0].label = label;
-        chartData.datasets[0].data = data;
-        //this.setState({ chartData: chartData });
-        //unitialise the x and y axis as we are multiple rows of data ..hence
-        //we need to call our Charts components with each instance of its own state....
-        labels = [];
-        data = [];
-        label = '';
+        this.setState({ data: data_s, finals: this.props.data });
       }
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
-
       console.log('rendered charts....');
-      console.log('enw satte is ..');
-      console.log(this.state.chartData);
+      console.log('rendered charts props and state is ..');
+      console.log(this.props.data);
+      console.log(this.state.data);
+      if (this.state.data.length > 0) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'test' },
+          this.state.data.map(function (series, i) {
+            return _react2.default.createElement(_presentational.Chart, {
+              chartData: series,
+              title: series.datasets[0].label,
+              legendPosition: 'bottom',
+              key: i
+            });
+          })
+        );
+      }
       return _react2.default.createElement(
         'div',
-        { className: 'test' },
-        this.props.data.map(function (series) {
-          return _react2.default.createElement(_presentational.Chart, {
-            chartData: _this2.state.chartData,
-            location: 'Massachusetts',
-            legendPosition: 'bottom'
-          });
-        })
+        null,
+        'Upload an excel to view a line chart'
       );
     }
   }]);
@@ -38708,7 +38738,7 @@ var Chart = function (_Component) {
           options: {
             title: {
               display: this.props.displayTitle,
-              text: 'Largest Cities In ' + this.props.location,
+              text: this.props.title,
               fontSize: 25
             },
             legend: {
@@ -38727,8 +38757,7 @@ var Chart = function (_Component) {
 Chart.defaultProps = {
   displayTitle: true,
   displayLegend: true,
-  legendPosition: 'right',
-  location: 'City'
+  legendPosition: 'right'
 };
 exports.default = Chart;
 
@@ -55959,7 +55988,7 @@ var Files = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      console.log('renderd....');
+      console.log('renderd Files....');
       return _react2.default.createElement(
         'div',
         null,
@@ -86043,6 +86072,218 @@ module.exports = ZStream;
 /***/ (function(module, exports) {
 
 /* (ignored) */
+
+/***/ }),
+/* 344 */,
+/* 345 */
+/***/ (function(module, exports) {
+
+/*!
+Copyright (C) 2013-2017 by Andrea Giammarchi - @WebReflection
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var
+  // should be a not so common char
+  // possibly one JSON does not encode
+  // possibly one encodeURIComponent does not encode
+  // right now this char is '~' but this might change in the future
+  specialChar = '~',
+  safeSpecialChar = '\\x' + (
+    '0' + specialChar.charCodeAt(0).toString(16)
+  ).slice(-2),
+  escapedSafeSpecialChar = '\\' + safeSpecialChar,
+  specialCharRG = new RegExp(safeSpecialChar, 'g'),
+  safeSpecialCharRG = new RegExp(escapedSafeSpecialChar, 'g'),
+
+  safeStartWithSpecialCharRG = new RegExp('(?:^|([^\\\\]))' + escapedSafeSpecialChar),
+
+  indexOf = [].indexOf || function(v){
+    for(var i=this.length;i--&&this[i]!==v;);
+    return i;
+  },
+  $String = String  // there's no way to drop warnings in JSHint
+                    // about new String ... well, I need that here!
+                    // faked, and happy linter!
+;
+
+function generateReplacer(value, replacer, resolve) {
+  var
+    inspect = !!replacer,
+    path = [],
+    all  = [value],
+    seen = [value],
+    mapp = [resolve ? specialChar : '[Circular]'],
+    last = value,
+    lvl  = 1,
+    i, fn
+  ;
+  if (inspect) {
+    fn = typeof replacer === 'object' ?
+      function (key, value) {
+        return key !== '' && replacer.indexOf(key) < 0 ? void 0 : value;
+      } :
+      replacer;
+  }
+  return function(key, value) {
+    // the replacer has rights to decide
+    // if a new object should be returned
+    // or if there's some key to drop
+    // let's call it here rather than "too late"
+    if (inspect) value = fn.call(this, key, value);
+
+    // did you know ? Safari passes keys as integers for arrays
+    // which means if (key) when key === 0 won't pass the check
+    if (key !== '') {
+      if (last !== this) {
+        i = lvl - indexOf.call(all, this) - 1;
+        lvl -= i;
+        all.splice(lvl, all.length);
+        path.splice(lvl - 1, path.length);
+        last = this;
+      }
+      // console.log(lvl, key, path);
+      if (typeof value === 'object' && value) {
+    	// if object isn't referring to parent object, add to the
+        // object path stack. Otherwise it is already there.
+        if (indexOf.call(all, value) < 0) {
+          all.push(last = value);
+        }
+        lvl = all.length;
+        i = indexOf.call(seen, value);
+        if (i < 0) {
+          i = seen.push(value) - 1;
+          if (resolve) {
+            // key cannot contain specialChar but could be not a string
+            path.push(('' + key).replace(specialCharRG, safeSpecialChar));
+            mapp[i] = specialChar + path.join(specialChar);
+          } else {
+            mapp[i] = mapp[0];
+          }
+        } else {
+          value = mapp[i];
+        }
+      } else {
+        if (typeof value === 'string' && resolve) {
+          // ensure no special char involved on deserialization
+          // in this case only first char is important
+          // no need to replace all value (better performance)
+          value = value .replace(safeSpecialChar, escapedSafeSpecialChar)
+                        .replace(specialChar, safeSpecialChar);
+        }
+      }
+    }
+    return value;
+  };
+}
+
+function retrieveFromPath(current, keys) {
+  for(var i = 0, length = keys.length; i < length; current = current[
+    // keys should be normalized back here
+    keys[i++].replace(safeSpecialCharRG, specialChar)
+  ]);
+  return current;
+}
+
+function generateReviver(reviver) {
+  return function(key, value) {
+    var isString = typeof value === 'string';
+    if (isString && value.charAt(0) === specialChar) {
+      return new $String(value.slice(1));
+    }
+    if (key === '') value = regenerate(value, value, {});
+    // again, only one needed, do not use the RegExp for this replacement
+    // only keys need the RegExp
+    if (isString) value = value .replace(safeStartWithSpecialCharRG, '$1' + specialChar)
+                                .replace(escapedSafeSpecialChar, safeSpecialChar);
+    return reviver ? reviver.call(this, key, value) : value;
+  };
+}
+
+function regenerateArray(root, current, retrieve) {
+  for (var i = 0, length = current.length; i < length; i++) {
+    current[i] = regenerate(root, current[i], retrieve);
+  }
+  return current;
+}
+
+function regenerateObject(root, current, retrieve) {
+  for (var key in current) {
+    if (current.hasOwnProperty(key)) {
+      current[key] = regenerate(root, current[key], retrieve);
+    }
+  }
+  return current;
+}
+
+function regenerate(root, current, retrieve) {
+  return current instanceof Array ?
+    // fast Array reconstruction
+    regenerateArray(root, current, retrieve) :
+    (
+      current instanceof $String ?
+        (
+          // root is an empty string
+          current.length ?
+            (
+              retrieve.hasOwnProperty(current) ?
+                retrieve[current] :
+                retrieve[current] = retrieveFromPath(
+                  root, current.split(specialChar)
+                )
+            ) :
+            root
+        ) :
+        (
+          current instanceof Object ?
+            // dedicated Object parser
+            regenerateObject(root, current, retrieve) :
+            // value as it is
+            current
+        )
+    )
+  ;
+}
+
+var CircularJSON = {
+  stringify: function stringify(value, replacer, space, doNotResolve) {
+    return CircularJSON.parser.stringify(
+      value,
+      generateReplacer(value, replacer, !doNotResolve),
+      space
+    );
+  },
+  parse: function parse(text, reviver) {
+    return CircularJSON.parser.parse(
+      text,
+      generateReviver(reviver)
+    );
+  },
+  // A parser should be an API 1:1 compatible with JSON
+  // it should expose stringify and parse methods.
+  // The default parser is the native JSON.
+  parser: JSON
+};
+
+module.exports = CircularJSON;
+
 
 /***/ })
 /******/ ]);
