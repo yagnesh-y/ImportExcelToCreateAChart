@@ -8603,7 +8603,7 @@ var Charts = function (_Component) {
         }]
       },
       data: [],
-      finals: []
+      dataFromFile: []
     };
     return _this;
   }
@@ -8611,21 +8611,29 @@ var Charts = function (_Component) {
   _createClass(Charts, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      //call the getChartData method to parse the data from File
+      //component and send the data to Chart component
       this.getChartData();
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
+      //when the user uploads a new excel file, File component
+      //fires and this component gets updated, calling again getChartData
+      //to update the newState
       this.getChartData();
     }
   }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
-      return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.finals) ? true : false;
+      //make sure if the same props is being sent, if so dont re-render
+      return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.dataFromFile) ? true : false;
     }
   }, {
     key: 'getChartData',
     value: function getChartData() {
+      //this function is used to parse the data sent from File
+      //component as required by the presentational Chart component
       var excel_data = this.props.data;
       if (excel_data.length > 0) {
         var label = ''; //dataset label name ex: SERIES1
@@ -8645,6 +8653,9 @@ var Charts = function (_Component) {
           chartData.labels = labels;
           chartData.datasets[0].label = label;
           chartData.datasets[0].data = data;
+          //push all the chartData sets required by Chart component into an array
+          //so that later in render this can be looped over and sent to presentational
+          //Chart component for rendering...
           data_s.push(chartData);
           var chartData = JSON.parse(_circularJson2.default.stringify(this.state.chartData));
           //unitialise the x and y axis as we are multiple rows of data ..hence
@@ -8653,7 +8664,8 @@ var Charts = function (_Component) {
           data = [];
           label = '';
         }
-        this.setState({ data: data_s, finals: this.props.data });
+        //setting the state of data array and dataFromFile
+        this.setState({ data: data_s, dataFromFile: this.props.data });
       }
     }
   }, {

@@ -24,24 +24,33 @@ class Charts extends Component {
         ]
       },
       data: [],
-      finals: []
+      dataFromFile: []
     };
   }
   componentDidMount() {
+    //call the getChartData method to parse the data from File
+    //component and send the data to Chart component
     this.getChartData();
   }
 
   componentDidUpdate() {
+    //when the user uploads a new excel file, File component
+    //fires and this component gets updated, calling again getChartData
+    //to update the newState
     this.getChartData();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.finals)
+    //make sure if the same props is being sent, if so dont re-render
+    return JSON.stringify(nextProps.data) !==
+    JSON.stringify(this.state.dataFromFile)
       ? true
       : false;
   }
 
   getChartData() {
+    //this function is used to parse the data sent from File
+    //component as required by the presentational Chart component
     var excel_data = this.props.data;
     if (excel_data.length > 0) {
       var label = ''; //dataset label name ex: SERIES1
@@ -62,6 +71,9 @@ class Charts extends Component {
         chartData.labels = labels;
         chartData.datasets[0].label = label;
         chartData.datasets[0].data = data;
+        //push all the chartData sets required by Chart component into an array
+        //so that later in render this can be looped over and sent to presentational
+        //Chart component for rendering...
         data_s.push(chartData);
         var chartData = JSON.parse(
           CircularJSON.stringify(this.state.chartData)
@@ -72,7 +84,8 @@ class Charts extends Component {
         data = [];
         label = '';
       }
-      this.setState({ data: data_s, finals: this.props.data });
+      //setting the state of data array and dataFromFile
+      this.setState({ data: data_s, dataFromFile: this.props.data });
     }
   }
 
