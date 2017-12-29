@@ -28,19 +28,14 @@ class Charts extends Component {
     };
   }
   componentDidMount() {
-    console.log('charts mounted...');
     this.getChartData();
   }
 
   componentDidUpdate() {
-    console.log('charts updated.......');
     this.getChartData();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('next props and state is ');
-    console.log(nextProps.data);
-    console.log(this.state.data);
     return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.finals)
       ? true
       : false;
@@ -54,8 +49,6 @@ class Charts extends Component {
       var data = []; //y-axis
       var data_s = Object.assign([], this.state.data);
       var chartData = JSON.parse(CircularJSON.stringify(this.state.chartData));
-      console.log('before for loop is ');
-      console.log(chartData);
       for (let i = 0; i < excel_data.length; i++) {
         for (let j = 1; j < excel_data[i].length; j++) {
           for (let k = 0; k < excel_data[i][j].length; k++) {
@@ -65,18 +58,10 @@ class Charts extends Component {
           }
         }
         label = excel_data[i][0][0];
-        console.log(`label is ${label}`);
         //here we are trying to set the newState for the new Row of data ex: "SERIES1"
-        console.log(`chartData before is ${chartData}`);
-        console.log(chartData);
         chartData.labels = labels;
-        console.log(`chartData after is ${chartData}`);
-        console.log(chartData);
-        console.log(`labels is ${labels}`);
         chartData.datasets[0].label = label;
         chartData.datasets[0].data = data;
-        console.log(`chartData at ${i} is `);
-        console.log(chartData);
         data_s.push(chartData);
         var chartData = JSON.parse(
           CircularJSON.stringify(this.state.chartData)
@@ -92,10 +77,6 @@ class Charts extends Component {
   }
 
   render() {
-    console.log('rendered charts....');
-    console.log('rendered charts props and state is ..');
-    console.log(this.props.data);
-    console.log(this.state.data);
     if (this.state.data.length > 0) {
       return (
         <div className="test">

@@ -8611,21 +8611,16 @@ var Charts = function (_Component) {
   _createClass(Charts, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      console.log('charts mounted...');
       this.getChartData();
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      console.log('charts updated.......');
       this.getChartData();
     }
   }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
-      console.log('next props and state is ');
-      console.log(nextProps.data);
-      console.log(this.state.data);
       return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.finals) ? true : false;
     }
   }, {
@@ -8638,8 +8633,6 @@ var Charts = function (_Component) {
         var data = []; //y-axis
         var data_s = Object.assign([], this.state.data);
         var chartData = JSON.parse(_circularJson2.default.stringify(this.state.chartData));
-        console.log('before for loop is ');
-        console.log(chartData);
         for (var i = 0; i < excel_data.length; i++) {
           for (var j = 1; j < excel_data[i].length; j++) {
             for (var k = 0; k < excel_data[i][j].length; k++) {
@@ -8648,18 +8641,10 @@ var Charts = function (_Component) {
             }
           }
           label = excel_data[i][0][0];
-          console.log('label is ' + label);
           //here we are trying to set the newState for the new Row of data ex: "SERIES1"
-          console.log('chartData before is ' + chartData);
-          console.log(chartData);
           chartData.labels = labels;
-          console.log('chartData after is ' + chartData);
-          console.log(chartData);
-          console.log('labels is ' + labels);
           chartData.datasets[0].label = label;
           chartData.datasets[0].data = data;
-          console.log('chartData at ' + i + ' is ');
-          console.log(chartData);
           data_s.push(chartData);
           var chartData = JSON.parse(_circularJson2.default.stringify(this.state.chartData));
           //unitialise the x and y axis as we are multiple rows of data ..hence
@@ -8674,10 +8659,6 @@ var Charts = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      console.log('rendered charts....');
-      console.log('rendered charts props and state is ..');
-      console.log(this.props.data);
-      console.log(this.state.data);
       if (this.state.data.length > 0) {
         return _react2.default.createElement(
           'div',
@@ -55988,7 +55969,6 @@ var Files = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      console.log('renderd Files....');
       return _react2.default.createElement(
         'div',
         null,
