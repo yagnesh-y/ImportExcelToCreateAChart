@@ -8634,9 +8634,7 @@ var Charts = function (_Component) {
       //if {update=true} then we make sure this call is coming from another
       //update from the user by uploading differnt excel...
       //reset the state of 'data' to empty array so that new data can be populated
-      console.log(this.state.data.length);
       if (nextProps.update && this.state.data.length > 0) {
-        console.log('coming here....');
         this.setState({ data: [] });
       }
 
@@ -8730,7 +8728,7 @@ var Charts = function (_Component) {
       return _react2.default.createElement(
         'div',
         null,
-        'Upload an excel to view a line chart'
+        'Upload an excel(xlsx/csv) to view a line chart'
       );
     }
   }]);
@@ -58263,36 +58261,42 @@ var Files = function (_Component) {
       var rABS = true; // true: readAsBinaryString ; false: readAsArrayBuffer
       var files = e.target.files,
           f = files[0];
-      var reader = new FileReader();
-      var self = this;
-      reader.onload = function (e) {
-        var data = e.target.result;
-        if (!rABS) data = new Uint8Array(data);
-        var workbook = _xlsx2.default.read(data, { type: rABS ? 'binary' : 'array' });
-        var first_sheet_name = workbook.SheetNames[0];
-        /* Get worksheet */
-        var worksheet = workbook.Sheets[first_sheet_name];
-        var data = _xlsx2.default.utils.sheet_to_json(worksheet, { header: 1 });
+      //adding validation here to ensure just .xlsx/csv files are uploaded and not any other format
+      var ext = f.name.slice(f.name.lastIndexOf('.') + 1);
+      if (ext === 'csv' || ext === 'xlsx') {
+        var reader = new FileReader();
+        var self = this;
+        reader.onload = function (e) {
+          var data = e.target.result;
+          if (!rABS) data = new Uint8Array(data);
+          var workbook = _xlsx2.default.read(data, { type: rABS ? 'binary' : 'array' });
+          var first_sheet_name = workbook.SheetNames[0];
+          /* Get worksheet */
+          var worksheet = workbook.Sheets[first_sheet_name];
+          var data = _xlsx2.default.utils.sheet_to_json(worksheet, { header: 1 });
 
-        //create deep clone of nested array object before changing the orignal object..
-        var len = data.length,
-            copy = new Array(len); // boost in Safari
-        for (var i = 0; i < len; ++i) {
-          copy[i] = data[i].slice(0);
-        } //split the value at '|' and format the data before sending it to Charts
-        for (var i = 0; i < data.length; i++) {
-          for (var j = 0; j < data[i].length; j++) {
-            copy[i][j] = data[i][j].split('|');
+          //create deep clone of nested array object before changing the orignal object..
+          var len = data.length,
+              copy = new Array(len); // boost in Safari
+          for (var i = 0; i < len; ++i) {
+            copy[i] = data[i].slice(0);
+          } //split the value at '|' and format the data before sending it to Charts
+          for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < data[i].length; j++) {
+              copy[i][j] = data[i][j].split('|');
+            }
           }
-        }
 
-        //set the state of the new parsed data
-        self.setState({
-          data: copy
-        });
-      };
+          //set the state of the new parsed data
+          self.setState({
+            data: copy
+          });
+        };
 
-      if (rABS) reader.readAsBinaryString(f);else reader.readAsArrayBuffer(f);
+        if (rABS) reader.readAsBinaryString(f);else reader.readAsArrayBuffer(f);
+      } else {
+        alert('Oops wrong format of file uploaded..Please upload excel/csv files of given data format..');
+      }
     }
   }, {
     key: 'render',

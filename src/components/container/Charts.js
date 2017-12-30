@@ -46,9 +46,7 @@ class Charts extends Component {
     //if {update=true} then we make sure this call is coming from another
     //update from the user by uploading differnt excel...
     //reset the state of 'data' to empty array so that new data can be populated
-    console.log(this.state.data.length);
     if (nextProps.update && this.state.data.length > 0) {
-      console.log('coming here....');
       this.setState({ data: [] });
     }
 
@@ -140,7 +138,7 @@ class Charts extends Component {
         </div>
       );
     }
-    return <div>Upload an excel to view a line chart</div>;
+    return <div>Upload an excel(xlsx/csv) to view a line chart</div>;
   }
 }
 
