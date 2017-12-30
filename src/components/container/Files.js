@@ -54,7 +54,7 @@ class Files extends Component {
           id="excel_file"
           onChange={this.handleFile.bind(this)}
         />
-        <Charts data={this.state.data} />
+        <Charts data={this.state.data} update />
       </div>
     );
   }
