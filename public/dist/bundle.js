@@ -8631,6 +8631,15 @@ var Charts = function (_Component) {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
       //make sure if the same props is being sent, if so dont re-render
+      //if {update=true} then we make sure this call is coming from another
+      //update from the user by uploading differnt excel...
+      //reset the state of 'data' to empty array so that new data can be populated
+      console.log(this.state.data.length);
+      if (nextProps.update && this.state.data.length > 0) {
+        console.log('coming here....');
+        this.setState({ data: [] });
+      }
+
       return JSON.stringify(nextProps.data) !== JSON.stringify(this.state.dataFromFile) ? true : false;
     }
 
@@ -58296,7 +58305,7 @@ var Files = function (_Component) {
           id: 'excel_file',
           onChange: this.handleFile.bind(this)
         }),
-        _react2.default.createElement(_Charts2.default, { data: this.state.data })
+        _react2.default.createElement(_Charts2.default, { data: this.state.data, update: true })
       );
     }
   }]);
