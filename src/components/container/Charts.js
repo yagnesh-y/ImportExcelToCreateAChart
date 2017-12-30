@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Chart } from '../presentational/';
 import CircularJSON from 'circular-json';
+import request from 'superagent';
 
 class Charts extends Component {
   constructor(props) {
@@ -46,6 +47,26 @@ class Charts extends Component {
     JSON.stringify(this.state.dataFromFile)
       ? true
       : false;
+  }
+
+  //function to send parsed excel data to server on click of a button..
+  sendDataToServer() {
+    var data = this.state.dataFromFile;
+    request
+      .post('/')
+      .set('Accept', /application\/json/)
+      .send({ data: data })
+      .end((err, res) => {
+        if (err) {
+          console.log('Some error occured while sending ...' + err);
+          return;
+        }
+        //if data successfully posted to server...alert back user confirmation message
+        if (res) {
+          alert('Data sent to server...check server console for JSON..');
+          alert(res.text);
+        }
+      });
   }
 
   getChartData() {
@@ -103,6 +124,10 @@ class Charts extends Component {
               />
             );
           })}
+          <p>Send parsed excel data to Server</p>
+          <button onClick={this.sendDataToServer.bind(this)}>
+            Send Data to Server
+          </button>
         </div>
       );
     }
